@@ -47,6 +47,9 @@ func (state *State) Add(frame sensor.CameraFrame) error {
 	if !state.window.Valid || frame.JobGeneration != state.window.JobGeneration || frame.PlateGeneration != state.window.PlateGeneration {
 		return fmt.Errorf("register frame generation does not match window")
 	}
+	if frame.ReceivedAt.Before(state.window.LastAt) {
+		return fmt.Errorf("register frame timestamp moved backwards")
+	}
 	if frame.WebMeter < state.window.LastMeter {
 		return fmt.Errorf("register frame meter moved backwards")
 	}
